@@ -1,0 +1,1 @@
+go run main.go -i test -o test-dest
