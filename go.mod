@@ -1,4 +1,4 @@
-module github.com/redkenrok/go-image_sorter
+module github.com/redkenrok/go-file_sorter
 
 go 1.23.4
 
