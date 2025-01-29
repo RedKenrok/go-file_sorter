@@ -13,31 +13,41 @@ import (
 	file "github.com/redkenrok/go-file_sorter/internal/file"
 )
 
+var (
+	version   = "dev"
+	commit    = "none"
+	buildDate = "unknown"
+)
+
 func main() {
 	help := flag.Bool("help", false, "Show detailed help information")
 	helpShort := flag.Bool("h", false, "Show detailed help information")
+	version := flag.Bool("version", false, "Show program version information")
+	versionShort := flag.Bool("v", false, "Show program version information")
 
-	output := flag.String("o", "", "Destination directory")
-	outputLong := flag.String("output", "", "Destination directory")
-	input := flag.String("i", ".", "Source directory")
-	inputLong := flag.String("input", ".", "Source directory")
+	dryRunLong := flag.Bool("dry-run", false, "Perform a dry run without moving or copying files")
 	format := flag.String("f", "%year%/%year%-%month%-%day%/%type%/file-%hour%_%minute%_%second%-%index%%ext%", "Path format for sorted files")
 	formatLong := flag.String("format", "%year%/%year%-%month%-%day%/%type%/file-%hour%_%minute%_%second%-%index%%ext%", "Path format for sorted files")
-  dryRun := flag.Bool("dr", false, "Perform a dry run without moving or copying files")
-	dryRunLong := flag.Bool("dry-run", false, "Perform a dry run without moving or copying files")
+	input := flag.String("i", ".", "Source directory")
+	inputLong := flag.String("input", ".", "Source directory")
 	move := flag.Bool("m", false, "Move files instead of copying")
 	moveLong := flag.Bool("move", false, "Move files instead of copying")
+	output := flag.String("o", "", "Destination directory")
+	outputLong := flag.String("output", "", "Destination directory")
+	dryRun := flag.Bool("dr", false, "Perform a dry run without moving or copying files")
 
 	flag.Usage = func() {
-		fmt.Println("Usage: file_sorter [options]")
-		fmt.Println("\nOptions:")
-		flag.PrintDefaults()
+		fmt.Println("For usage run: file_sorter --help\n")
 	}
 
 	flag.Parse()
 
 	if *help || *helpShort {
 		showHelp()
+		os.Exit(0)
+	}
+	if *version || *versionShort {
+		showVersion()
 		os.Exit(0)
 	}
 
@@ -63,8 +73,8 @@ func main() {
 		pathFormat = *formatLong
 	}
 
-  doDryRun := *dryRun || *dryRunLong
-  doMove := *move || *moveLong
+	doDryRun := *dryRun || *dryRunLong
+	doMove := *move || *moveLong
 
 	if err := os.MkdirAll(destDir, os.ModePerm); err != nil {
 		fmt.Printf("Error creating destination directory: %v\n", err)
@@ -93,7 +103,7 @@ func main() {
 				return nil
 			}
 
-      // Create new file path using creation date.
+			// Create new file path using creation date.
 			creationDate, err := file.GetFileCreationDate(path)
 			if err != nil {
 				return fmt.Errorf("error getting creation date for file %s: %w", path, err)
@@ -139,30 +149,6 @@ func main() {
 	}
 }
 
-func showHelp() {
-	fmt.Println("file_sorter: Organize and sort image files based on metadata")
-	fmt.Println("\nUsage: file_sorter [options]")
-	fmt.Println("\nOptions:")
-	fmt.Println("  -h, --help       Show this help message")
-	fmt.Println("  -i, --input      Source directory (default: current directory)")
-	fmt.Println("  -o, --output     Destination directory (required)")
-	fmt.Println("  -f, --format     File path format (default: %year%/%year%-%month%-%day%/%type%/file-%hour%_%minute%_%second%-%index%%ext%)")
-	fmt.Println("  -dr, --dry-run   Perform a dry run without moving or copying files")
-	fmt.Println("  -m, --move       Move files instead of copying")
-	fmt.Println("\nFormat Placeholders:")
-	fmt.Println("  %year%    - 4-digit year")
-	fmt.Println("  %month%   - 2-digit month")
-	fmt.Println("  %day%     - 2-digit day")
-	fmt.Println("  %hour%    - 2-digit hour (24-hour format)")
-	fmt.Println("  %minute%  - 2-digit minute")
-	fmt.Println("  %second%  - 2-digit second")
-	fmt.Println("  %index%   - Incremental file index")
-	fmt.Println("  %ext%     - File extension")
-	fmt.Println("  %type%    - File type (image/video/audio/other)")
-	fmt.Println("\nExample:")
-	fmt.Println("  file_sorter -i /source -o /destination -f \"%year%/photos-%month%-%day%/image-%hour%_%minute%-%index%%ext%\"")
-}
-
 func formatFileName(
 	format string,
 	creationDate time.Time,
@@ -191,4 +177,35 @@ func formatFileName(
 	)
 
 	return replacer.Replace(format)
+}
+
+func showHelp() {
+	fmt.Println("file_sorter: Organize and sort files based on its metadata.")
+	fmt.Println("\nUsage: file_sorter [options]")
+	fmt.Println("\nOptions:")
+	fmt.Println("  -dr, --dry-run   Perform a dry run without actually moving or copying files, simply outputs what it would have done.")
+	fmt.Println("  -f, --format     File path format (default: %year%/%year%-%month%-%day%/%type%/file-%hour%_%minute%_%second%-%index%%ext%).")
+	fmt.Println("  -h, --help       Show detailed help information.")
+	fmt.Println("  -i, --input      Input directory (default: current working directory).")
+	fmt.Println("  -m, --move       Move files instead of copying, increased performance when on the same disk.")
+	fmt.Println("  -o, --output     Output directory (required).")
+	fmt.Println("  -v, --version    Show program version information.")
+	fmt.Println("\nFormat Placeholders:")
+	fmt.Println("  %year%    - 4-digit year")
+	fmt.Println("  %month%   - 2-digit month")
+	fmt.Println("  %day%     - 2-digit day")
+	fmt.Println("  %hour%    - 2-digit hour (24-hour format)")
+	fmt.Println("  %minute%  - 2-digit minute")
+	fmt.Println("  %second%  - 2-digit second")
+	fmt.Println("  %index%   - Incremental file index")
+	fmt.Println("  %ext%     - File extension")
+	fmt.Println("  %type%    - File type (image/video/audio/other)")
+	fmt.Println("\nExample:")
+	fmt.Println("  file_sorter -i /source -o /destination -f \"%year%/%year%-%month%-%day%/file-%hour%_%minute%-%index%%ext%\"")
+}
+
+func showVersion() {
+	fmt.Printf("Version: %s\n", version)
+	fmt.Printf("Commit: %s\n", commit)
+	fmt.Printf("Build Date: %s\n", buildDate)
 }
