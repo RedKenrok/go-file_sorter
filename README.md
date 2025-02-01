@@ -4,11 +4,8 @@ Simply copies files in a directory of when it was created. For images it tries t
 
 It's simple, but does what it needs to do.
 
-## Usage
-
-```bash
-file_sorter --help
-```
+- CLI usage `file_sorter --help`
+- TUI usage `file_sorter`
 
 ## Build
 
