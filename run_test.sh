@@ -1,7 +1,4 @@
-printf "Running: 'file_sorter'\n----\n"
-go run main.go
-
-printf "\n----\nRunning: 'file_sorter -h'\n----\n"
+printf "Running: 'file_sorter -h'\n----\n"
 go run main.go -h
 
 printf "\n----\nRunning: 'file_sorter -v'\n----\n"

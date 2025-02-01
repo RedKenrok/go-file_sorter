@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func GetMimeType(
+func getMimeType(
 	path string,
 ) string {
 	ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(path), "."))

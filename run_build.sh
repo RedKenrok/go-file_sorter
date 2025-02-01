@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
 if [ -z "$1" ]; then
-    DATE=$(date -u '+%Y-%m-%d.1')
-    read -p "Enter version number (e.g. ${DATE}): " VERSION
+  DATE=$(date -u '+%Y-%m-%d.1')
+  read -p "Enter version number (e.g. ${DATE}): " VERSION
 else
-    VERSION=$1
+  VERSION=$1
 fi
-if ! [[ $VERSION =~ ^[0-9]+-[0-9]+-[0-9]+\.[0-9]+$ ]]; then
-    echo "Error: Version should be in format Y-m-d.v (e.g. 2025-01-25.1)"
-    exit 1
+if [ -z "${VERSION}" ]; then
+  VERSION=${DATE}
+elif ! [[ $VERSION =~ ^[0-9]+-[0-9]+-[0-9]+\.[0-9]+$ ]]; then
+  echo "Error: Version should be in format Y-m-d.v (e.g. 2025-01-25.1)"
+  exit 1
 fi
 
 COMMIT=$(git rev-parse --short HEAD)
